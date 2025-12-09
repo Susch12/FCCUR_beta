@@ -1,0 +1,25 @@
+-- Schema minimalista pero efectivo
+CREATE TABLE packages (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  version TEXT NOT NULL,
+  file_path TEXT UNIQUE NOT NULL,
+  file_size INTEGER,
+  blake3_hash TEXT,
+  sha256_hash TEXT,
+  category TEXT,
+  platform TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE downloads (
+  id INTEGER PRIMARY KEY,
+  package_id INTEGER,
+  ip_address TEXT,
+  downloaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(package_id) REFERENCES packages(id)
+);
+
+-- Índices para performance
+CREATE INDEX idx_category ON packages(category);
+CREATE INDEX idx_downloads_pkg ON downloads(package_id);

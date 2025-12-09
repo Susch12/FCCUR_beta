@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCCUR - Free Community Content Universal Repository</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>FCCUR</h1>
+            <p>Free Community Content Universal Repository</p>
+            <p class="subtitle">Sistema Local de Distribución de Herramientas Educativas</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Search & Filter Section -->
+        <section id="search-section">
+            <input type="text" id="search-input" placeholder="Buscar..." aria-label="Buscar">
+            <select id="content-type-filter" aria-label="Filtrar por tipo de contenido">
+                <option value="">Todo el contenido</option>
+                <option value="tool">Herramientas/Software</option>
+                <option value="material">Material de Cursos</option>
+            </select>
+            <select id="category-filter" aria-label="Filtrar por categoría">
+                <option value="">Todas las categorías</option>
+                <option value="os">Sistemas Operativos</option>
+                <option value="compiler">Compiladores</option>
+                <option value="ide">IDEs</option>
+                <option value="tool">Herramientas</option>
+                <option value="library">Bibliotecas</option>
+            </select>
+            <select id="course-filter" aria-label="Filtrar por curso" style="display: none;">
+                <option value="">Todos los cursos</option>
+            </select>
+            <select id="platform-filter" aria-label="Filtrar por plataforma">
+                <option value="">Todas las plataformas</option>
+                <option value="windows">Windows</option>
+                <option value="mac">macOS</option>
+                <option value="linux">Linux</option>
+                <option value="all">Multiplataforma</option>
+            </select>
+            <select id="sort-filter" aria-label="Ordenar por">
+                <option value="date-desc">Más reciente primero</option>
+                <option value="date-asc">Más antiguo primero</option>
+                <option value="name-asc">Nombre (A-Z)</option>
+                <option value="name-desc">Nombre (Z-A)</option>
+                <option value="size-desc">Tamaño (Mayor)</option>
+                <option value="size-asc">Tamaño (Menor)</option>
+                <option value="downloads-desc">Más descargado</option>
+            </select>
+        </section>
+
+        <!-- Recent Uploads Section -->
+        <section id="recent-section">
+            <h2>Subidas Recientes</h2>
+            <div id="recent-uploads"></div>
+        </section>
+
+        <!-- Admin Upload Section (hidden by default) -->
+        <section id="admin-section" style="display: none;">
+            <h2>Subir Paquete</h2>
+            <form id="upload-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="package-content-type">Tipo de Contenido *</label>
+                        <select id="package-content-type" name="content_type" required>
+                            <option value="tool">Herramienta/Software</option>
+                            <option value="material">Material de Curso</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="course-name-group" style="display: none;">
+                        <label for="package-course-name">Nombre del Curso</label>
+                        <input type="text" id="package-course-name" name="course_name" placeholder="Ej: Sistemas Operativos II">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="package-name">Nombre *</label>
+                        <input type="text" id="package-name" name="name" placeholder="Ej: Visual Studio Code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="package-version">Versión *</label>
+                        <input type="text" id="package-version" name="version" placeholder="Ej: 1.85 o 2024" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="package-category">Categoría *</label>
+                        <select id="package-category" name="category" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option value="os">Sistema Operativo</option>
+                            <option value="compiler">Compilador</option>
+                            <option value="ide">IDE</option>
+                            <option value="tool">Herramienta</option>
+                            <option value="library">Biblioteca</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="package-platform">Plataforma *</label>
+                        <select id="package-platform" name="platform" required>
+                            <option value="">Plataforma</option>
+                            <option value="windows">Windows</option>
+                            <option value="mac">macOS</option>
+                            <option value="linux">Linux</option>
+                            <option value="all">Todas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="package-description">Descripción</label>
+                    <textarea id="package-description" name="description" placeholder="Descripción del paquete..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="package-file">Archivo *</label>
+                    <input type="file" id="package-file" name="package" required>
+                    <small>Tamaño máximo: 10GB</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="package-thumbnail">Miniatura (opcional)</label>
+                    <input type="file" id="package-thumbnail" name="thumbnail" accept="image/png,image/jpeg">
+                    <small>PNG o JPG, máximo 5MB. Si no se proporciona, se usará un icono por defecto.</small>
+                </div>
+
+                <button type="submit" class="btn-primary">Subir Paquete</button>
+            </form>
+
+            <div id="upload-progress" style="display: none;">
+                <p class="progress-text">Subiendo paquete...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p class="progress-percentage" id="progress-percentage">0%</p>
+            </div>
+        </section>
+
+        <!-- Packages Grid -->
+        <section id="packages-section">
+            <h2>Paquetes Disponibles</h2>
+            <div id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Cargando paquetes...</p>
+            </div>
+            <div id="error" style="display: none;"></div>
+            <div id="packages-grid"></div>
+            <div id="no-results" style="display: none;">
+                <p>No se encontraron paquetes.</p>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats-section">
+            <h2>Estadísticas</h2>
+            <div id="stats-grid"></div>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-300);">
+                <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Checksums de Todos los Paquetes</h3>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <a href="/api/checksums/all?type=sha256" class="btn-checksum" download>
+                        Descargar SHA256 (Todos)
+                    </a>
+                    <a href="/api/checksums/all?type=blake3" class="btn-checksum" download>
+                        Descargar BLAKE3 (Todos)
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 FCCUR - Sistema Local de Distribución Educativa</p>
+            <p>
+                <button id="admin-toggle" class="btn-link">Modo Administrador</button>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Package Info Modal -->
+    <div id="modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" id="modal-close">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- BLAKE3 hashing library for duplicate detection (local) -->
+    <script type="module" src="lib/blake3-loader.js"></script>
+    <script src="app.js" defer></script>
+</body>
+</html>
